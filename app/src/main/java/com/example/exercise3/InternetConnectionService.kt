@@ -1,6 +1,5 @@
 package com.example.exercise3
 
-
 import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
@@ -10,8 +9,7 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import com.example.exercise3.R
-
+import android.util.Log
 
 class InternetConnectionService : Service() {
 
@@ -24,7 +22,6 @@ class InternetConnectionService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Register BroadcastReceiver to monitor internet connection changes
         registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         return START_STICKY
     }
@@ -35,8 +32,8 @@ class InternetConnectionService : Service() {
             val isConnected = networkInfo != null && networkInfo.isConnected
             val message = if (isConnected) "Internet Connected" else "Internet Disconnected"
             displayNotification(message)
-            // Log connection status to JSON file
-            logConnectionStatus(isConnected)
+            // Log connection status to file
+            (applicationContext as MyApp).writeLogToFile("Internet connection: $message")
         }
     }
 
@@ -47,16 +44,12 @@ class InternetConnectionService : Service() {
             .setSmallIcon(R.drawable.ic_launcher_background)
             .build()
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-        notificationManager?.notify(101, notification)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(101, notification)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(connectionReceiver)
-    }
-
-    private fun logConnectionStatus(isConnected: Boolean) {
-        // Implement logging to JSON file
     }
 }

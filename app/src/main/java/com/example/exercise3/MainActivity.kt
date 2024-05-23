@@ -1,29 +1,29 @@
 package com.example.exercise3
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.exercise3.ui.theme.Exercise3Theme
+import androidx.compose.ui.unit.dp
+import java.io.File
+import androidx.compose.foundation.layout.padding
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Set content using Jetpack Compose
         setContent {
-            Exercise3Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "code1",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    LogScreen()
                 }
             }
         }
@@ -31,17 +31,27 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun LogScreen() {
+    val logs = remember { readLogsFromFile() }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(logs) { log ->
+            Text(text = log, modifier = Modifier.padding(8.dp))
+        }
+    }
+}
+
+fun readLogsFromFile(): List<String> {
+    val logFile = File("/data/data/com.example.exercise3/files/log.txt")
+    if (!logFile.exists()) return emptyList()
+    return logFile.readLines().reversed()
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    Exercise3Theme {
-        Greeting("Android")
+fun DefaultPreview() {
+    MaterialTheme {
+        LogScreen()
     }
 }

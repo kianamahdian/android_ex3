@@ -1,28 +1,34 @@
 package com.example.exercise3
 
 import android.content.Context
+import android.content.IntentFilter
+import android.os.Build
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
-class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+class StatusCheckWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
-        checkAirplaneMode()
-        checkBluetoothStatus()
+        // Check Bluetooth status
+        val bluetoothStatus = checkBluetoothStatus()
+        Log.i("worker_airplane", "Bluetooth status: $bluetoothStatus")
+        (applicationContext as MyApp).writeLogToFile("Bluetooth status: $bluetoothStatus")
+
+        // Check airplane mode status
+        val airplaneModeStatus = checkAirplaneModeStatus()
+        Log.i("worker_airplane", "Airplane mode status: $airplaneModeStatus")
+        (applicationContext as MyApp).writeLogToFile("Airplane mode status: $airplaneModeStatus")
+
         return Result.success()
     }
 
-    private fun checkAirplaneMode() {
-        val isAirplaneModeOn = android.provider.Settings.Global.getInt(
-            applicationContext.contentResolver,
-            android.provider.Settings.Global.AIRPLANE_MODE_ON, 0
-        ) != 0
-        Log.i("worker_airplane", "Airplane mode: ${if (isAirplaneModeOn) "ON" else "OFF"}")
+    private fun checkBluetoothStatus(): String {
+        // Implement Bluetooth status check logic here
+        return "Bluetooth status logic not implemented"
     }
 
-    private fun checkBluetoothStatus() {
-        val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
-        val isBluetoothOn = bluetoothAdapter?.isEnabled == true
-        Log.i("worker_bluetooth", "Bluetooth: ${if (isBluetoothOn) "ON" else "OFF"}")
+    private fun checkAirplaneModeStatus(): String {
+        // Implement airplane mode status check logic here
+        return "Airplane mode status logic not implemented"
     }
 }
